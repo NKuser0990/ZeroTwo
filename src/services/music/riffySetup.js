@@ -13,6 +13,10 @@ export function initializeMusic(client) {
         return;
     }
 
+    logger.info("===== Lavalink Config =====");
+    console.log(lavalinkConfig.nodes);
+    logger.info("===========================");
+    
     client.riffy = new Riffy(client, lavalinkConfig.nodes, {
         send: (payload) => {
             const guild = client.guilds.cache.get(payload.d.guild_id);
