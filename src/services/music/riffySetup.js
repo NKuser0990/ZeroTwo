@@ -31,6 +31,25 @@ export function initializeMusic(client) {
             nodeFetchInfo: true,
         },
     });
+    logger.info("===== RIFFY DEBUG =====");
+logger.info("Creating Riffy...");
+logger.info(`Node count: ${client.riffy.nodes?.size}`);
+
+setTimeout(() => {
+    logger.info("===== RIFFY STATUS =====");
+    logger.info(`Nodes: ${client.riffy.nodes?.size}`);
+
+    if (!client.riffy.nodes?.size) {
+        logger.warn("No Lavalink nodes registered.");
+        return;
+    }
+
+    for (const [name, node] of client.riffy.nodes) {
+        logger.info(
+            `${name} | connected=${node.connected} | session=${node.sessionId || "none"}`
+        );
+    }
+}, 5000);
     logger.info("STEP 2");
 
     setupPlayerHandler(client);
