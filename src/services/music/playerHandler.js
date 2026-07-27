@@ -285,6 +285,8 @@ client.riffy.on('trackStuck', async (player, track, payload) => {
     );
 });
 
+}
+
 export async function shutdownMusic(client) {
     if (!client.riffy?.players) {
         return;
