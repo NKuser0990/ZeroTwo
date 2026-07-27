@@ -5,7 +5,9 @@ import { reconcileReactionRoleMessages } from "../services/reactionRoleService.j
 import { reconcileTicketPanels, reconcileVerificationPanels, reconcileReactionRolePanelHealth } from "../services/panelHealthService.js";
 import { reconcileLevelRoles } from "../services/leveling/levelRoleSyncService.js";
 import { initRiffyAfterReady } from "../services/music/riffySetup.js";
-
+startupLog("READY EVENT FIRED");
+startupLog(`Music feature: ${client.config?.features?.music}`);
+startupLog(`client.riffy exists: ${!!client.riffy}`);
 export default {
   name: Events.ClientReady,
   once: true,
