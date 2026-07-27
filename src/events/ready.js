@@ -18,6 +18,9 @@ console.log("READY FILE BERJALAN");
       startupLog(`Serving ${client.guilds.cache.size} guild(s)`);
       startupLog(`Loaded ${client.commands.size} commands`);
       console.log(client.config.features);
+      startupLog("READY EVENT FIRED");
+      startupLog(`Music feature: ${client.config?.features?.music}`);
+      startupLog(`client.riffy exists: ${!!client.riffy}`);
 
       if (client.config?.features?.music) {
         initRiffyAfterReady(client);
