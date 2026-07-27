@@ -9,17 +9,20 @@ const __dirname = dirname(__filename);
 
 export default async function loadEvents(client) {
     const eventsPath = join(__dirname, '../../events');
-    const eventFiles = await readdir(eventsPath).then(files => files.filter(file => file.endsWith('.js')));
+    const eventFiles = (await readdir(eventsPath)).filter(file => file.endsWith('.js'));
 
     logger.info(`Found ${eventFiles.length} event files to load`);
 
     for (const file of eventFiles) {
         const filePath = join(eventsPath, file);
+
+        logger.info(`📄 Loading event file: ${file}`);
+
         try {
             const { default: event } = await import(`file://${filePath}`);
 
             if (!event?.name || typeof event.execute !== 'function') {
-                logger.warn(`Event ${file} is missing required "name" or "execute" properties.`);
+                logger.warn(`⚠️ Event ${file} is missing required "name" or "execute" properties.`);
                 continue;
             }
 
@@ -27,7 +30,8 @@ export default async function loadEvents(client) {
                 try {
                     await event.execute(...args, client);
                 } catch (error) {
-                    logger.error(`Error executing event ${event.name}:`, error);
+                    logger.error(`❌ Error executing event "${event.name}" from file "${file}"`);
+                    logger.error(error);
                 }
             };
 
@@ -38,8 +42,11 @@ export default async function loadEvents(client) {
                 client.on(event.name, safeExecute);
                 logger.info(`✅ Registered event: ${event.name}`);
             }
+
         } catch (error) {
-            logger.error(`Error loading event ${file}:`, error);
+            logger.error(`❌ Failed to load event file: ${file}`);
+            logger.error(`📂 Path: ${filePath}`);
+            logger.error(error.stack || error);
         }
     }
 }
