@@ -201,43 +201,89 @@ export function setupPlayerHandler(client) {
         const guildData = getGuildMusicData(player.guildId);
         clearUpdateInterval(guildData);
 
-        if (guildData.playerMessageId && guildData.playerChannelId) {
-            try {
-                const channel = client.channels.cache.get(guildData.playerChannelId);
-                if (channel) {
-                    const msg = await channel.messages.fetch(guildData.playerMessageId);
-                    await msg.delete();
-                }
-            } catch {
-                // already deleted
-            }
-        }
-
-        guildData.playerMessageId = null;
-        guildData.playerChannelId = null;
-        guildData.previousTracks = [];
-        guildData.autoPaused = false;
-        if (guildData.idleTimeout) {
-            clearTimeout(guildData.idleTimeout);
-            guildData.idleTimeout = null;
-        }
-    });
-
-    client.riffy.on('trackError', async (player, track, payload) => {
-        logger.error(`Track error in ${player.guildId} for "${track?.info?.title}":`, payload?.error || payload);
-        const guildData = getGuildMusicData(player.guildId);
-        if (guildData.playerChannelId) {
+    if (guildData.playerMessageId && guildData.playerChannelId) {
+        try {
             const channel = client.channels.cache.get(guildData.playerChannelId);
-            if (channel) {
-                channel.send(`Failed to play **${track?.info?.title || 'track'}**. Skipping...`).catch(() => null);
-            }
-        }
-    });
 
-    client.riffy.on('trackStuck', async (player, track, payload) => {
-        logger.warn(`Track stuck in ${player.guildId} for "${track?.info?.title}" (${payload?.thresholdMs}ms)`);
-    });
-}
+            if (channel) {
+                const msg = await channel.messages.fetch(guildData.playerMessageId);
+                await msg.delete();
+            }
+        } catch {
+            // already deleted
+        }
+    }
+
+    guildData.playerMessageId = null;
+    guildData.playerChannelId = null;
+    guildData.previousTracks = [];
+    guildData.autoPaused = false;
+
+    if (guildData.idleTimeout) {
+        clearTimeout(guildData.idleTimeout);
+        guildData.idleTimeout = null;
+    }
+});
+
+client.riffy.on("trackError", async (player, track, payload) => {
+
+    console.log("\n================ TRACK ERROR ================\n");
+
+    console.log("Guild ID:");
+    console.log(player.guildId);
+
+    console.log("\nTrack:");
+    console.dir(track, { depth: null });
+
+    console.log("\nPayload:");
+    console.dir(payload, { depth: null });
+
+    console.log("\nPayload JSON:");
+    try {
+        console.log(JSON.stringify(payload, null, 2));
+    } catch {
+        console.log("Payload tidak bisa di-serialize.");
+    }
+
+    console.log("\n=============================================\n");
+
+    logger.error(
+        `Track error in ${player.guildId} for "${track?.info?.title}"`,
+        payload
+    );
+
+    const guildData = getGuildMusicData(player.guildId);
+
+    if (guildData.playerChannelId) {
+        const channel = client.channels.cache.get(guildData.playerChannelId);
+
+        if (channel) {
+            channel.send(
+                `❌ Failed to play **${track?.info?.title || "Unknown Track"}**.\nLihat log Railway untuk detail error.`
+            ).catch(() => {});
+        }
+    }
+});
+
+client.riffy.on("trackException", (player, track, exception) => {
+
+    console.log("\n=========== TRACK EXCEPTION ===========");
+
+    console.dir(exception, { depth: null });
+
+    try {
+        console.log(JSON.stringify(exception, null, 2));
+    } catch {}
+
+    console.log("=======================================\n");
+
+});
+
+client.riffy.on('trackStuck', async (player, track, payload) => {
+    logger.warn(
+        `Track stuck in ${player.guildId} for "${track?.info?.title}" (${payload?.thresholdMs}ms)`
+    );
+});
 
 export async function shutdownMusic(client) {
     if (!client.riffy?.players) {
