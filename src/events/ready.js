@@ -9,7 +9,7 @@ import { initRiffyAfterReady } from "../services/music/riffySetup.js";
 export default {
   name: Events.ClientReady,
   once: true,
-
+console.log("READY FILE BERJALAN");
   async execute(client) {
     try {
       client.user.setPresence(config.bot.presence);
