@@ -17,6 +17,7 @@ export default {
       startupLog(`Ready! Logged in as ${client.user.tag}`);
       startupLog(`Serving ${client.guilds.cache.size} guild(s)`);
       startupLog(`Loaded ${client.commands.size} commands`);
+      console.log(client.config.features);
 
       if (client.config?.features?.music) {
         initRiffyAfterReady(client);
