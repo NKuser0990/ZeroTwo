@@ -2,30 +2,40 @@ import { Events } from "discord.js";
 import { logger, startupLog } from "../utils/logger.js";
 import config from "../config/application.js";
 import { reconcileReactionRoleMessages } from "../services/reactionRoleService.js";
-import { reconcileTicketPanels, reconcileVerificationPanels, reconcileReactionRolePanelHealth } from "../services/panelHealthService.js";
+import {
+  reconcileTicketPanels,
+  reconcileVerificationPanels,
+  reconcileReactionRolePanelHealth,
+} from "../services/panelHealthService.js";
 import { reconcileLevelRoles } from "../services/leveling/levelRoleSyncService.js";
 import { initRiffyAfterReady } from "../services/music/riffySetup.js";
-startupLog("READY EVENT FIRED");
-startupLog(`Music feature: ${client.config?.features?.music}`);
-startupLog(`client.riffy exists: ${!!client.riffy}`);
+
 export default {
   name: Events.ClientReady,
   once: true,
-console.log("READY FILE BERJALAN");
+
   async execute(client) {
     try {
+      console.log("========== READY EVENT ==========");
+      console.log("Music Feature:", client.config?.features?.music);
+      console.log("Riffy Exists:", !!client.riffy);
+      console.log("Client User:", client.user?.tag);
+      console.log("=================================");
+
       client.user.setPresence(config.bot.presence);
 
       startupLog(`Ready! Logged in as ${client.user.tag}`);
       startupLog(`Serving ${client.guilds.cache.size} guild(s)`);
       startupLog(`Loaded ${client.commands.size} commands`);
-      console.log(client.config.features);
-      startupLog("READY EVENT FIRED");
-      startupLog(`Music feature: ${client.config?.features?.music}`);
-      startupLog(`client.riffy exists: ${!!client.riffy}`);
 
       if (client.config?.features?.music) {
+        startupLog("Initializing Riffy...");
+
         initRiffyAfterReady(client);
+
+        startupLog("Riffy initialization requested.");
+      } else {
+        logger.warn("Music feature is disabled.");
       }
 
       const reconciliationSummary = await reconcileReactionRoleMessages(client);
@@ -38,12 +48,14 @@ console.log("READY FILE BERJALAN");
         `Ticket panel health: scanned ${ticketPanelSummary.scannedGuilds} guilds, healthy ${ticketPanelSummary.healthyPanels}, deleted ${ticketPanelSummary.deletedPanels}, missing channel ${ticketPanelSummary.missingChannels}, recovered ${ticketPanelSummary.recoveredIds}, errors ${ticketPanelSummary.errors}`
       );
 
-      const verificationPanelSummary = await reconcileVerificationPanels(client);
+      const verificationPanelSummary =
+        await reconcileVerificationPanels(client);
       startupLog(
         `Verification panel health: scanned ${verificationPanelSummary.scannedGuilds} guilds, healthy ${verificationPanelSummary.healthyPanels}, deleted ${verificationPanelSummary.deletedPanels}, missing channel ${verificationPanelSummary.missingChannels}, recovered ${verificationPanelSummary.recoveredIds}, errors ${verificationPanelSummary.errors}`
       );
 
-      const reactionRolePanelSummary = await reconcileReactionRolePanelHealth(client);
+      const reactionRolePanelSummary =
+        await reconcileReactionRolePanelHealth(client);
       startupLog(
         `Reaction role panel health: scanned ${reactionRolePanelSummary.scannedPanels} panels, healthy ${reactionRolePanelSummary.healthyPanels}, deleted ${reactionRolePanelSummary.deletedPanels}, missing channel ${reactionRolePanelSummary.missingChannels}, recovered ${reactionRolePanelSummary.recoveredIds}, errors ${reactionRolePanelSummary.errors}`
       );
