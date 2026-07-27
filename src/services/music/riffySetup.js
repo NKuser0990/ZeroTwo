@@ -136,6 +136,11 @@ export function initRiffyAfterReady(client) {
     try {
         client.riffy.init(client.user.id);
         console.log("client.riffy.init() SUCCESS");
+        console.log(client.riffy.nodes);
+        console.log(Array.isArray(client.riffy.nodes));
+
+        console.log(client.riffy.nodeMap);
+        console.log(client.riffy.nodeMap?.size);
     } catch (err) {
         console.log("client.riffy.init() FAILED");
         console.error(err);
