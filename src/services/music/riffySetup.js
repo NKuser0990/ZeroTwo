@@ -29,6 +29,20 @@ export function initializeMusic(client) {
 
     setupPlayerHandler(client);
 
+    client.riffy.on("nodeConnect", node => {
+    logger.info(`✅ Connected to Lavalink: ${node.name}`);
+});
+
+client.riffy.on("nodeDisconnect", (node, reason) => {
+    logger.warn(`❌ Lavalink disconnected: ${node.name}`);
+    logger.warn(reason);
+});
+
+client.riffy.on("nodeError", (node, error) => {
+    logger.error(`Lavalink error: ${node.name}`);
+    logger.error(error);
+});
+
     client.on('raw', (packet) => {
         if (
             ![
