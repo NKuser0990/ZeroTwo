@@ -8,7 +8,7 @@ const require = createRequire(import.meta.url);
 const { Riffy } = require('riffy');
 
 export function initializeMusic(client) {
-    logger.info("STEP 1");
+    console.log("STEP 1");
     if (!lavalinkConfig.nodes?.length) {
         logger.error('No Lavalink nodes configured. Add lavalink/nodes.json, set LAVALINK_NODES, or set LAVALINK_HOST in your environment.');
         return;
@@ -31,13 +31,13 @@ export function initializeMusic(client) {
             nodeFetchInfo: true,
         },
     });
-    logger.info("===== RIFFY DEBUG =====");
+    console.log("===== RIFFY DEBUG =====");
 logger.info("Creating Riffy...");
 logger.info(`Node count: ${client.riffy.nodes?.size}`);
 
 setTimeout(() => {
-    logger.info("===== RIFFY STATUS =====");
-    logger.info(`Nodes: ${client.riffy.nodes?.size}`);
+    console.log("===== RIFFY STATUS =====");
+    console.log(`Nodes: ${client.riffy.nodes?.size}`);
 
     if (!client.riffy.nodes?.size) {
         logger.warn("No Lavalink nodes registered.");
