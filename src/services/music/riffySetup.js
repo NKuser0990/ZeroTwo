@@ -8,6 +8,7 @@ const require = createRequire(import.meta.url);
 const { Riffy } = require('riffy');
 
 export function initializeMusic(client) {
+    logger.info("STEP 1");
     if (!lavalinkConfig.nodes?.length) {
         logger.error('No Lavalink nodes configured. Add lavalink/nodes.json, set LAVALINK_NODES, or set LAVALINK_HOST in your environment.');
         return;
@@ -30,8 +31,11 @@ export function initializeMusic(client) {
             nodeFetchInfo: true,
         },
     });
+    logger.info("STEP 2");
 
     setupPlayerHandler(client);
+
+    logger.info("STEP 3");
 
     client.riffy.on("nodeConnect", node => {
     logger.info(`✅ Connected to Lavalink: ${node.name}`);
@@ -70,5 +74,7 @@ export function initRiffyAfterReady(client) {
     if (client.riffy && client.user?.id) {
         client.riffy.init(client.user.id);
         logger.info('Riffy voice connection manager initialized.');
+    } else {
+        logger.warn("client.riffy tidak ada");
     }
 }
